@@ -28,11 +28,11 @@ export default function Footer() {
                         <li>
                             <div
                                 className="flex items-center justify-center text-blue-500 transition hover:text-blue-600"
-                                href="https://github.com/nalarbp/scifr-flow"
+                                href="https://github.com/nalarbp/create-scifr"
                                 aria-label="Github"
                             >
                                 <button className="btn btn-ghost btn-circle">
-                                    <a href="https://github.com/nalarbp/scifr-flow" target="_blank" rel="noreferrer">
+                                    <a href="https://github.com/nalarbp/create-scifr" target="_blank" rel="noreferrer">
                                         <GithubLogo size={40} />
                                     </a>
                                 </button>

@@ -3,7 +3,7 @@ export default function Welcome() {
         <div id='home' className="relative pt-36 px-8 pb-8 ml-auto bg-gradient-to-r from-purple-400/20 via-blue-500/20 to-purple-60/20">
             <div className="lg:w-2/3 xl:w-1/2 text-center mx-auto pb-8">
                 <h1 className="text-gray-900 dark:text-white font-bold text-5xl md:text-5xl xl:text-5xl ">
-                    <span className="text-primary dark:text-white">ScifrFlow: </span>
+                    <span className="text-primary dark:text-white">SCIFR: </span>
                     Developing your {" "}
                     <span className="bg-primary text-white">single file interactive report </span>
                     starts here

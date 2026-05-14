@@ -1,4 +1,4 @@
-# SCIFRflow boilerplate
+# SCIFR project boilerplate
 
 ## Start the development server
 `npm run dev`

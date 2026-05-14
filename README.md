@@ -12,6 +12,12 @@ SCFIR is a Single Self-Contained Interactive File Report created based on create
 ## Tp build your scifr
 `npm run build`
 
+## TODO
+- add stable HTML data boundaries for the mutation
+- refactor app to read payload from DOM, not bundled JSON, its unstable with the upgrading
+- make sure mutator worjks  in both `npm run dev` and `npm run build`
+- upgrade React after markers definition and mutation stable
+
 ## License: MIT
 Copyright 2024; Budi Permana
 

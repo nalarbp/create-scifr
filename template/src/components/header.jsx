@@ -29,7 +29,7 @@ export default function Header() {
 
                         </ul>
                     </div>
-                    <a href='https://scifr.fordelab.com/' className="btn btn-ghost text-xl">Scifr-flow</a>
+                    <a href='https://scifr.fordelab.com/' className="btn btn-ghost text-xl">SCIFR</a>
                 </div>
                 <div className="navbar-end">
                     <div className="hidden lg:flex">
@@ -40,7 +40,7 @@ export default function Header() {
                         </ul>
                     </div>
                     <button className="btn btn-square btn-ghost">
-                        <a href="https://github.com/nalarbp/scifr-flow" target="_blank" rel="noreferrer"><GithubLogo size={50} /></a>
+                        <a href="https://github.com/nalarbp/create-scifr" target="_blank" rel="noreferrer"><GithubLogo size={50} /></a>
                     </button>
                 </div>
             </div>
