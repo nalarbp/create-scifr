@@ -6,6 +6,9 @@ SCFIR is a Single Self-Contained Interactive File Report created based on create
 ## To use
 `npx create-scifr my_scifr_project`
 
+## To mutate a built scifr
+`npx mutate-scifr --data_json input.json --template scifr.html`
+
 ## To start the development server
 `cd my_scifr_project && npm run dev`
 
@@ -13,9 +16,9 @@ SCFIR is a Single Self-Contained Interactive File Report created based on create
 `npm run build`
 
 ## TODO
-- add stable HTML data boundaries for the mutation
-- refactor app to read payload from DOM, not bundled JSON, its unstable with the upgrading
-- make sure mutator worjks  in both `npm run dev` and `npm run build`
+- ~~add stable HTML data boundaries for the mutation~~
+- ~~refactor app to read payload from DOM, not bundled JSON, its unstable with the upgrading~~
+- ~~make sure mutator worjks  in both `npm run dev` and `npm run build`~~
 - upgrade React after markers definition and mutation stable
 
 ## License: MIT

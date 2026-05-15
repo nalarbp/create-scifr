@@ -4,8 +4,7 @@ import {
     scatterInputDataStore, scatterNodeSizeStore, scatterIsInteractiveStore, scatterColorSchemeStore,
     scatterLegendPositionStore, scatterLegendOffsetXStore, scatterLegendOffsetYStore
 } from '../store';
-
-const inputDataJSON = require('../input.json');
+import { loadScifrData } from '../loadScifrData';
 
 export default function Example() {
     const [scatterInputData, setScatterInputData] = useAtom(scatterInputDataStore);
@@ -19,6 +18,7 @@ export default function Example() {
     const colorPallete = ['nivo', 'paired', 'category10', 'accent', 'dark2'];
 
     if (scatterInputData === null) {
+        const inputDataJSON = loadScifrData();
         const irisDataset = inputDataJSON.scifrExampleInputJSON.irisData
         const irisNivoScatterData = irisDataset.reduce((acc, curr) => {
             const species = curr.species;

@@ -5,6 +5,7 @@
   "author": "Budi Permana",
   "license": "MIT",
   "bin": {
-    "create-scifr": "./cli.js"
+    "create-scifr": "./create-scifr.js",
+    "mutate-scifr": "./mutate-scifr.js"
   }
 }
