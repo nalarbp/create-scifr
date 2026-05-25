@@ -1,3 +1,611 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --ink: #2a241d;
+  --muted: #74695c;
+  --line: #d9cfbf;
+  --paper: #f5efe4;
+  --panel: #fffaf2;
+  --panel-strong: #e7dcc6;
+  --accent: #a05a2c;
+  --accent-soft: #f0dfcd;
+  --green: #667a5a;
+  --red: #a05a2c;
+  --blue: #6e6451;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "IBM Plex Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.scifr-shell {
+  min-height: 100vh;
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, rgba(22, 23, 27, 0.05) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(22, 23, 27, 0.05) 1px, transparent 1px),
+    var(--paper);
+  background-size: 42px 42px;
+}
+
+.scifr-nav {
+  position: fixed;
+  top: 14px;
+  left: clamp(12px, 2vw, 24px);
+  right: clamp(12px, 2vw, 24px);
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 250, 242, 0.08);
+  border-radius: 999px;
+  background: rgba(49, 55, 61, 0.96);
+  backdrop-filter: blur(10px);
+}
+
+.scifr-kicker {
+  margin: 0 0 4px;
+  padding-left: 10px;
+  color: #fffaf2;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+  text-transform: none;
+}
+
+.scifr-nav-title {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.1;
+  color: #fffaf2;
+}
+
+.scifr-nav-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.scifr-pager {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.scifr-pager-button,
+.scifr-pager-current {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
+  height: 34px;
+  padding: 0 12px;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.06);
+  color: #efe7db;
+  border: 1px solid rgba(255, 250, 242, 0.14);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.scifr-pager-button {
+  cursor: pointer;
+}
+
+.scifr-pager-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.scifr-pager-current {
+  background: #fffaf2;
+  border-color: #fffaf2;
+  color: #31373d;
+}
+
+.scifr-stage {
+  width: 100%;
+  overflow: hidden;
+}
+
+.scifr-track {
+  display: flex;
+  width: 100%;
+  transition: transform 460ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.scifr-slide {
+  width: 100%;
+  min-width: 100%;
+  min-height: 100vh;
+  padding: clamp(92px, 11vh, 126px) clamp(18px, 5vw, 72px) clamp(32px, 7vh, 72px);
+  display: flex;
+  align-items: center;
+}
+
+.scifr-slide-inner {
+  max-width: min(80vw, 1400px);
+  margin: 0 auto;
+  width: 100%;
+}
+
+.scifr-slide--reverse .scifr-copy {
+  order: 2;
+}
+
+.scifr-slide--reverse .scifr-visual {
+  order: 1;
+}
+
+.scifr-copy {
+  flex: 0 1 42rem;
+  max-width: 650px;
+  opacity: 1;
+  transform: translateX(0);
+  transition: transform 320ms ease;
+}
+
+.scifr-copy.active {
+  transform: translateX(-4px);
+}
+
+.scifr-eyebrow {
+  margin: 0 0 12px;
+  color: var(--blue);
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.scifr-copy h2 {
+  margin: 0;
+  max-width: 11ch;
+  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+  font-size: clamp(2.4rem, 6vw, 5rem);
+  line-height: 0.94;
+  letter-spacing: -0.03em;
+}
+
+.scifr-lead {
+  margin: 24px 0 20px;
+  max-width: 42rem;
+  color: var(--muted);
+  font-size: clamp(1rem, 1.8vw, 1.28rem);
+  line-height: 1.55;
+}
+
+.scifr-points {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+
+.scifr-points li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  font-size: clamp(1rem, 1.4vw, 1.12rem);
+  line-height: 1.55;
+  color: #2d333b;
+}
+
+.scifr-points li::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--accent);
+  margin-top: 0.48rem;
+}
+
+.scifr-visual {
+  flex: 1 1 0%;
+  min-width: 0;
+  opacity: 1;
+  transform: translateX(0);
+  transition: transform 320ms ease;
+}
+
+.scifr-visual.active {
+  transform: translateX(4px);
+}
+
+.scifr-card {
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: rgba(255, 250, 242, 0.96);
+  box-shadow: 0 18px 44px rgba(55, 42, 18, 0.08);
+}
+
+.scifr-panel-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.scifr-mini-card {
+  border: 1px solid rgba(22, 23, 27, 0.08);
+  border-radius: 20px;
+  background: white;
+  padding: 16px 18px;
+}
+
+.scifr-github-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 34px;
+  border: 1px solid rgba(255, 250, 242, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fffaf2;
+}
+
+.scifr-github-link:hover {
+  border-color: rgba(255, 250, 242, 0.28);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.scifr-mini-card strong {
+  display: block;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.scifr-mini-card span {
+  display: block;
+  margin-top: 6px;
+  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.scifr-boilerplate-copy {
+  flex: 0 1 30rem;
+  max-width: 400px;
+  text-align: left;
+}
+
+.scifr-boilerplate-copy h2 {
+  max-width: 11ch;
+}
+
+.scifr-boilerplate-copy .scifr-lead {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.scifr-boilerplate-visual {
+  flex: 1.35 1 0%;
+  min-width: 0;
+}
+
+.scifr-boilerplate-card {
+  max-width: 100%;
+}
+
+.scifr-system-card {
+  display: grid;
+  gap: 18px;
+}
+
+.scifr-system-copy h3 {
+  margin: 0;
+  color: var(--ink);
+  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+  font-size: clamp(1.9rem, 3.3vw, 2.7rem);
+  line-height: 0.98;
+}
+
+.scifr-system-copy p {
+  margin: 12px 0 0;
+  max-width: 44rem;
+  color: #675d4b;
+  font-size: clamp(0.95rem, 1.2vw, 1.04rem);
+  line-height: 1.55;
+}
+
+.scifr-system-diagram {
+  display: grid;
+  gap: 14px;
+}
+
+.scifr-system-band {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background:
+    linear-gradient(90deg, rgba(42, 36, 29, 0.04) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(42, 36, 29, 0.04) 1px, transparent 1px),
+    rgba(255, 250, 242, 0.9);
+  background-size: 22px 22px, 22px 22px, auto;
+  padding: 18px;
+}
+
+.scifr-system-band--build {
+  background-color: rgba(255, 244, 229, 0.94);
+}
+
+.scifr-system-band--runtime {
+  background-color: rgba(248, 248, 251, 0.94);
+}
+
+.scifr-system-band--output {
+  background-color: rgba(236, 248, 241, 0.96);
+}
+
+.scifr-system-band-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: baseline;
+}
+
+.scifr-system-band-header span {
+  color: #7c705e;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.scifr-system-band-header strong {
+  color: var(--ink);
+  font-size: 1.08rem;
+  line-height: 1.2;
+}
+
+.scifr-system-band p {
+  margin: 8px 0 0;
+  color: #675d4b;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.scifr-system-arrow {
+  display: flex;
+  justify-content: center;
+}
+
+.scifr-system-arrow span {
+  display: block;
+  width: 2px;
+  height: 24px;
+  background: linear-gradient(180deg, rgba(160, 90, 44, 0.12) 0%, rgba(160, 90, 44, 0.5) 100%);
+  position: relative;
+}
+
+.scifr-system-arrow span::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -1px;
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid rgba(160, 90, 44, 0.5);
+  border-bottom: 2px solid rgba(160, 90, 44, 0.5);
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.scifr-system-runtime {
+  margin-top: 14px;
+  display: grid;
+  gap: 14px;
+}
+
+.scifr-system-runtime-node {
+  display: grid;
+  gap: 5px;
+  padding: 14px 16px;
+  border: 1px solid rgba(42, 36, 29, 0.1);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 10px 24px rgba(80, 68, 42, 0.06);
+}
+
+.scifr-system-runtime-node strong {
+  color: var(--ink);
+  font-size: 0.96rem;
+  line-height: 1.2;
+}
+
+.scifr-system-runtime-node span {
+  color: #6f6556;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.scifr-system-runtime-node--data {
+  background: rgba(255, 247, 237, 0.94);
+}
+
+.scifr-system-runtime-center {
+  display: grid;
+  gap: 14px;
+  align-items: stretch;
+}
+
+.scifr-system-runtime-node--react {
+  background: #2a241d;
+}
+
+.scifr-system-runtime-node--react strong,
+.scifr-system-runtime-node--react span {
+  color: #fffaf2;
+}
+
+.scifr-system-runtime-node--jotai {
+  background: rgba(237, 243, 255, 0.96);
+}
+
+.scifr-system-runtime-node--tailwind {
+  background: rgba(239, 251, 248, 0.96);
+}
+
+.scifr-control label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #3d4650;
+}
+
+.scifr-control,
+.scifr-control input,
+.scifr-control select {
+  width: 100%;
+  max-width: 200px;
+}
+
+.scifr-video {
+  display: block;
+  border: 1px dashed #d58d7a;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #fff4ef 0%, #ffe2d3 100%);
+  padding: 26px;
+  transition: background 180ms ease, border-color 180ms ease;
+}
+
+.scifr-video:hover {
+  border-color: #bb6045;
+  background: linear-gradient(135deg, #ffece2 0%, #ffd7c1 100%);
+}
+
+.scifr-footer-note {
+  margin-top: 16px;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.scifr-controls-bar {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  z-index: 20;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  border: 1px solid rgba(22, 23, 27, 0.1);
+  border-radius: 999px;
+  background: rgba(246, 242, 234, 0.92);
+  padding: 8px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 14px 34px rgba(34, 27, 12, 0.08);
+}
+
+.scifr-nav-button {
+  border: none;
+  border-radius: 999px;
+  background: rgba(49, 55, 61, 0.96);
+  color: #fffaf2;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.scifr-nav-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.scifr-counter {
+  min-width: 82px;
+  text-align: center;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+@media (max-width: 1024px) {
+  .scifr-slide {
+  }
+
+  .scifr-slide-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .scifr-slide--reverse .scifr-copy,
+  .scifr-slide--reverse .scifr-visual {
+    order: initial;
+  }
+
+  .scifr-copy h2 {
+    max-width: none;
+  }
+}
+
+@media (orientation: portrait), (max-aspect-ratio: 4/3) {
+  .scifr-slide-inner {
+    max-width: min(82vw, 980px);
+  }
+
+  .scifr-slide-inner.flex {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .scifr-copy,
+  .scifr-visual,
+  .scifr-boilerplate-copy,
+  .scifr-boilerplate-visual {
+    flex-basis: auto !important;
+    flex-grow: 0 !important;
+    flex-shrink: 1 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .scifr-copy h2,
+  .scifr-boilerplate-copy h2 {
+    max-width: none !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .scifr-nav {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .scifr-nav-actions {
+    justify-content: flex-start;
+  }
+
+  .scifr-controls-bar {
+    width: calc(100% - 24px);
+    justify-content: center;
+  }
+
+}

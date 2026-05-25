@@ -1,19 +1,14 @@
 import { ResponsiveScatterPlot } from '@nivo/scatterplot'
-import { useAtomValue } from 'jotai';
-import {
-    scatterInputDataStore, scatterNodeSizeStore, scatterIsInteractiveStore, scatterColorSchemeStore,
-    scatterLegendPositionStore, scatterLegendOffsetXStore, scatterLegendOffsetYStore
-} from '../store';
 
-export default function NivoScatterPlot() {
-    const scatterInputData = useAtomValue(scatterInputDataStore);
-    const scatterNodeSize = useAtomValue(scatterNodeSizeStore);
-    const scatterIsInteractive = useAtomValue(scatterIsInteractiveStore);
-    const scatterColorScheme = useAtomValue(scatterColorSchemeStore);
-    const scatterLegendPosition = useAtomValue(scatterLegendPositionStore);
-    const scatterLegendOffsetX = useAtomValue(scatterLegendOffsetXStore);
-    const scatterLegendOffsetY = useAtomValue(scatterLegendOffsetYStore);
-
+export default function NivoScatterPlot({
+    scatterInputData,
+    scatterNodeSize,
+    scatterIsInteractive,
+    scatterColorScheme,
+    scatterLegendPosition,
+    scatterLegendOffsetX,
+    scatterLegendOffsetY
+}) {
     return (
         <ResponsiveScatterPlot
             data={scatterInputData}

@@ -1,25 +1,31 @@
-# Scifr boilerplate
-This is a boilerplate to create scifr project. 
+# SCIFR boilerplate
+This is a boilerplate for creating a SCIFR project.
 
-SCFIR is a Single Self-Contained Interactive File Report created based on create-react-app and html-inline-css/script-webpack-plugin to create a unified single file HTML.
+SCIFR is a Single Self-Contained Interactive File Report built with a modern SPA stack and bundled into a single HTML file.
 
 ## To use
 `npx create-scifr my_scifr_project`
 
 ## To mutate a built scifr
-`npx mutate-scifr --data_json input.json --template scifr.html`
+`npx mutate-scifr --data my_data --template scifr.html`
+
+`--data` accepts JSON, TSV, and CSV inputs.
+
+## Browser compatibility
+SCIFR is compatible with modern browsers only. Older browsers, including Internet Explorer, are not supported.
 
 ## To start the development server
 `cd my_scifr_project && npm run dev`
 
-## Tp build your scifr
+## To build your scifr
 `npm run build`
 
 ## TODO
 - ~~add stable HTML data boundaries for the mutation~~
-- ~~refactor app to read payload from DOM, not bundled JSON, its unstable with the upgrading~~
-- ~~make sure mutator worjks  in both `npm run dev` and `npm run build`~~
-- upgrade React after markers definition and mutation stable
+- ~~refactor app to read payload from the DOM instead of bundled JSON; the bundled approach was unstable during upgrades~~
+- ~~make sure the mutator works in both `npm run dev` and `npm run build`~~
+- ~~upgrade React after marker definition and mutation became stable~~
+- ~~upgrade mutate-scifr for more efficient data loading using column-oriented payloads, compression, and base64 encoding~~
 
 ## License: MIT
 Copyright 2024; Budi Permana
