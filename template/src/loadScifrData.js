@@ -68,6 +68,31 @@ function unpackColumnarData(columnarPayload) {
   return rows;
 }
 
+function setNestedValue(target, pathText, value) {
+  const pathSegments = pathText.split('.').filter(Boolean);
+
+  if (pathSegments.length === 0) {
+    return value;
+  }
+
+  let currentObject = target;
+
+  pathSegments.forEach((segment, index) => {
+    if (index === pathSegments.length - 1) {
+      currentObject[segment] = value;
+      return;
+    }
+
+    if (currentObject[segment] === undefined || currentObject[segment] === null) {
+      currentObject[segment] = {};
+    }
+
+    currentObject = currentObject[segment];
+  });
+
+  return target;
+}
+
 async function unpackPayload(payload) {
   if (!isPackedPayload(payload)) {
     return payload;
@@ -78,7 +103,13 @@ async function unpackPayload(payload) {
   const decodedPayload = JSON.parse(decompressedText);
 
   if (payload.layout === 'columnar') {
-    return unpackColumnarData(decodedPayload);
+    const unpackedRows = unpackColumnarData(decodedPayload);
+
+    if (typeof payload.table === 'string' && payload.table.length > 0) {
+      return setNestedValue({}, payload.table, unpackedRows);
+    }
+
+    return unpackedRows;
   }
 
   return decodedPayload;
@@ -92,3 +123,7 @@ export async function loadScifrData() {
 
   return unpackPayload(payload);
 }
+
+// Unpack a raw payload object directly (no DOM access). Used by the webapp to
+// seed the initial demo project from the bundled default data file.
+export { unpackPayload };

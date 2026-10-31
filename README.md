@@ -1,24 +1,46 @@
 # SCIFR boilerplate
-This is a boilerplate for creating a SCIFR project.
+SCIFR is a **S**ingle self-contained **I**nteractive **F**ile **R**eport — an SPA bundled into one portable HTML file with data embedded at its boundary.
 
-SCIFR is a Single Self-Contained Interactive File Report built with a modern SPA stack and bundled into a single HTML file.
+> For a full technical reference, see [llms.txt](./llms.txt).
 
-## To use
-`npx create-scifr my_scifr_project`
+## Scaffold a new project
+```
+npx create-scifr my_scifr_project
+cd my_scifr_project
+npm run dev
+```
 
-## To mutate a built scifr
-`npx mutate-scifr --data my_data --template scifr.html`
+## Build
+```
+npm run build
+```
+Produces two outputs in `dist/`:
+- `dist/index.html` — the **webapp** (IndexedDB project management, export)
+- `dist/scifr.html` — the **SCIFR template** (self-contained report shell)
 
-`--data` accepts JSON, TSV, and CSV inputs.
+## Inject data via CLI (pipeline workflow)
+```
+npx mutate-scifr --data my_data --template dist/scifr.html --output report.html
+```
+`--data` accepts JSON, TSV, and CSV.
+
+## Project management (webapp)
+The webapp (`npm run dev`) includes a Projects panel with:
+- Create, load, save, delete projects stored in browser IndexedDB
+- **Export .scifr** — save a project snapshot as a portable `.scifr` file
+- **Import Project** — load a `.scifr` or `.json` file as a new project
+- **Export HTML** — generate a self-contained SCIFR report from the active project
+- **Backup Projects / Restore Backup** — bulk export/import as `.scifr.projects`
+
+## File formats
+| Extension | Contents |
+|---|---|
+| `.html` | Self-contained SCIFR report (gzip+base64 payload embedded). Template mode |
+| `.scifr` | Single project snapshot (plain JSON). Webapp mode |
+| `.scifr.projects` | All projects backup bundle (plain JSON). Web app mode |
 
 ## Browser compatibility
-SCIFR is compatible with modern browsers only. Older browsers, including Internet Explorer, are not supported.
-
-## To start the development server
-`cd my_scifr_project && npm run dev`
-
-## To build your scifr
-`npm run build`
+Modern browsers only. Internet Explorer is not supported.
 
 ## TODO
 - ~~add stable HTML data boundaries for the mutation~~
@@ -26,12 +48,9 @@ SCIFR is compatible with modern browsers only. Older browsers, including Interne
 - ~~make sure the mutator works in both `npm run dev` and `npm run build`~~
 - ~~upgrade React after marker definition and mutation became stable~~
 - ~~upgrade mutate-scifr for more efficient data loading using column-oriented payloads, compression, and base64 encoding~~
+- ~~dual-build: webapp (IndexedDB project management) + scifr template~~
+- ~~project file formats: `.scifr`, `.scifr.projects`~~
+- ~~add `llms.txt` so coding agents (Claude, Cursor, Copilot, etc.) can orient themselves to the SCIFR codebase without manual explanation~~
 
 ## License: MIT
-Copyright 2024; Budi Permana
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+Copyright 2024 Budi Permana — see full MIT text in source.

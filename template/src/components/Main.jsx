@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useAtom } from 'jotai';
-import { loadScifrData } from '../loadScifrData';
 import { buildIrisScatterData, summariseIrisDataset } from '../scifrExampleData';
 import { activeChapterIdStore } from '../store';
 import ArchitectureChapter, { architectureChapterConfig } from './ArchitectureChapter';
@@ -10,73 +9,22 @@ import MutationWorkflowChapter, { mutationWorkflowChapterConfig } from './Mutati
 import ScifrNav from './ScifrNav';
 import WhatIsScifrChapter, { whatIsScifrChapterConfig } from './WhatIsScifrChapter';
 
-export default function Main() {
+export default function Main({ scifrData = null, onProjectsClick = null, onSaveProject = null, activeProjectName = null }) {
   const [activeChapterId, setActiveChapterId] = useAtom(activeChapterIdStore);
-  const [scifrData, setScifrData] = useState(null);
-  const [loadError, setLoadError] = useState(null);
 
-  useEffect(() => {
-    let isMounted = true;
-
-    async function hydrateScifrData() {
-      try {
-        const nextData = await loadScifrData();
-
-        if (isMounted) {
-          setScifrData(nextData);
-        }
-      } catch (error) {
-        if (isMounted) {
-          setLoadError(error);
-        }
-      }
-    }
-
-    hydrateScifrData();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  if (loadError instanceof Error) {
-    throw loadError;
-  }
   const irisDataset = scifrData?.scifrExampleInputJSON?.irisData ?? [];
-  const summary = scifrData === null
-    ? {
-        recordCount: 0,
-        speciesCount: 0,
-        speciesCounts: {},
-        meanSepalLength: '0.00',
-        meanSepalWidth: '0.00'
-      }
+  const summary = irisDataset.length === 0
+    ? { recordCount: 0, speciesCount: 0, speciesCounts: {}, meanSepalLength: '0.00', meanSepalWidth: '0.00' }
     : summariseIrisDataset(irisDataset);
-  const scatterData = scifrData === null ? [] : buildIrisScatterData(irisDataset);
+  const scatterData = irisDataset.length === 0 ? [] : buildIrisScatterData(irisDataset);
 
   const chapters = useMemo(
     () => [
-      {
-        ...whatIsScifrChapterConfig,
-        Component: WhatIsScifrChapter
-      },
-      {
-        ...architectureChapterConfig,
-        Component: ArchitectureChapter
-      },
-      {
-        ...boilerplateChapterConfig,
-        Component: BoilerplateChapter
-      },
-      {
-        ...irisExampleChapterConfig,
-        Component: IrisExampleChapter,
-        componentProps: { scatterData, summary }
-      },
-      {
-        ...mutationWorkflowChapterConfig,
-        Component: MutationWorkflowChapter
-      }
+      { ...whatIsScifrChapterConfig, Component: WhatIsScifrChapter },
+      { ...architectureChapterConfig, Component: ArchitectureChapter },
+      { ...boilerplateChapterConfig, Component: BoilerplateChapter },
+      { ...irisExampleChapterConfig, Component: IrisExampleChapter, componentProps: { scatterData, summary } },
+      { ...mutationWorkflowChapterConfig, Component: MutationWorkflowChapter },
     ],
     [scatterData, summary]
   );
@@ -116,18 +64,13 @@ export default function Main() {
     };
   }, [activeSlideIndex, chapterIds, chapters.length, setActiveChapterId]);
 
-  if (scifrData === null) {
-    return null;
-  }
-
   return (
     <main className="scifr-shell">
-      <ScifrNav slides={chapters} activeSlide={activeSlideIndex} />
+      <ScifrNav onProjectsClick={onProjectsClick} onSaveProject={onSaveProject} activeProjectName={activeProjectName} />
       <div className="scifr-stage">
         <div className="scifr-track" style={{ transform: `translateX(-${activeSlideIndex * 100}%)` }}>
           {chapters.map((chapter) => {
             const ChapterComponent = chapter.Component;
-
             return (
               <ChapterComponent
                 key={chapter.id}

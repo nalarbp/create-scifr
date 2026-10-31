@@ -37,7 +37,7 @@ export default function MutationWorkflowChapter({ active }) {
                 {`npx create-scifr my-report
 cd my-report
 npm run build
-npx mutate-scifr --data my_data --template scifr.html`}
+npx mutate-scifr --data my_data --template dist/scifr.html`}
               </pre>
             </div>
             <div className="mt-5 scifr-panel-grid sm:grid-cols-2">

@@ -23,6 +23,8 @@ fs.mkdirSync(projectPath);
 
 const templatePath = path.join(__dirname, 'template');
 
+const SKIP = new Set(['node_modules', 'dist', '.git', '.DS_Store']);
+
 function copyRecursiveSync(src, dest) {
     const exists = fs.existsSync(src);
     const stats = exists && fs.statSync(src);
@@ -32,6 +34,7 @@ function copyRecursiveSync(src, dest) {
             fs.mkdirSync(dest);
         }
         fs.readdirSync(src).forEach(childItemName => {
+            if (SKIP.has(childItemName)) return;
             copyRecursiveSync(path.join(src, childItemName), path.join(dest, childItemName));
         });
     } else {

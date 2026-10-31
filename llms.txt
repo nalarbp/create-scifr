@@ -1,0 +1,223 @@
+# create-scifr
+
+create-scifr is a scaffolding tool for building SCIFR projects. SCIFR (Single Self-Contained Interactive File Report) is a design pattern for turning a React + Vite single-page application into one portable HTML file with a data payload embedded at a stable boundary inside the HTML. This makes it well-suited for bioinformatics and data science pipelines, where tools like Snakemake, Nextflow, or custom scripts can produce a structured output file and inject it directly into a SCIFR template to produce a shareable interactive report — with no server, no CDN, and no internet connection required.
+
+SCIFR is initially described in a preprint: "Interactive data analysis and reporting with SCIFR: A Single-File SPA Approach" (bioRxiv, 2025, DOI: https://doi.org/10.1101/2025.07.10.664259). The pattern was later applied as the enabling design in BLITSFR (BLAST Interactive Tracks Single-File Report), published in *Bioinformatics Advances*, Vol 6 Issue 1, 2026 (DOI: https://doi.org/10.1093/bioadv/vbag282), for enabling efficient interactive comparison of large numbers of sequences.
+
+## Design
+
+The SCIFR design is inspired by plasmid cloning. In molecular biology, a plasmid is commonly used as a template for transferring a particular DNA sequence into a new experiment — the plasmid provides a stable, reusable scaffold while the insert changes. A SCIFR is the software equivalent: a self-contained interactive report that travels independently of any server or infrastructure. The `<script id="scifr-data">` data boundary acts as the integration site that tools can target to inject or replace data without touching the surrounding application code. The `mutate-scifr` CLI is the restriction enzyme.
+
+## Getting started
+
+```
+npx create-scifr my-project
+cd my-project
+npm run dev
+```
+
+This scaffolds a new project and starts the webapp development server. A demo project is created automatically on first launch using the bundled Iris dataset, so the app is immediately interactive.
+
+## Two modes
+
+A SCIFR project has two distinct build outputs and runtime modes.
+
+**Webapp mode** runs the app as a full interactive web application with IndexedDB-backed project management. It can be used to load data, explore visualisations, save project snapshots, and export finished reports. This is useful when you want to give users a persistent project workspace — hosted somewhere, they can load a SCIFR payload, interact with it, save their work, and return to it later. Run with `npm run dev` or build with `npm run build:app`, which produces `dist/index.html`.
+
+**Template mode** produces a self-contained single-file HTML report — `dist/scifr.html` — with a placeholder data boundary. This is the distributable template: when a pipeline produces a payload, it is injected into this template to generate the final report. Built with `npm run build:scifr`. Data injection can be done using the `mutate-scifr` CLI or any language or script that can manipulate HTML strings.
+
+The two modes are complementary. Use the webapp when you want users to have a flexible, persistent workspace for exploring payloads. Use the template and CLI in automated pipelines.
+
+## Project structure
+
+A scaffolded project has two HTML entry points:
+
+- `index.html` — loads the webapp via `src/index.jsx` → `App.jsx`
+- `scifr.html` — loads the template viewer via `src/scifr.jsx` → `ScifrApp.jsx`
+
+And three Vite config files:
+
+- `vite.config.mjs` — webapp build
+- `vite.scifr.config.mjs` — template build (`emptyOutDir: false`, input = `scifr.html`)
+- `vite.shared.mjs` — shared config factory (React plugin, `__SCIFR_VERSION__` define, 100MB asset inline limit)
+
+The key source files are:
+
+```
+src/
+  App.jsx               webapp root — project management, export, snapshot save/restore
+  ScifrApp.jsx          template viewer — reads the DOM payload, renders Main read-only
+  store.js              all Jotai atoms: project atoms and UI state atoms
+  scifrReport.js        buildScifrDownload(): fetch template, pack snapshot, trigger download
+  loadScifrData.js      loadScifrData() + unpackPayload(): read and decompress scifr-data boundary
+  scifrExampleData.js   Iris dataset helpers used by the demo chapter
+  input.columnar.gzip.base64.json  bundled demo seed data (columnar + gzip + base64)
+  db/
+    index.js            opens the IndexedDB database (scifr-db, projects store)
+    projects.js         CRUD operations: createProject, updateProjectSnapshot,
+                        updateLastBackedUpAt, importAllProjects, exportAllProjects
+  hooks/
+    useProjects.js      React hook wrapping all db operations with Jotai project atoms
+    useSnapshot.js      capture(): reads all UI atoms into a snapshot object
+                        restore(): writes atom values back from a stored snapshot
+  components/
+    Main.jsx            the slide deck renderer; receives scifrData, onProjectsClick, onSaveProject
+    ScifrNav.jsx        top navigation bar with GitHub link, active project name, Save, Projects
+    ProjectPanel.jsx    DaisyUI modal for project management: create, import, rename,
+                        delete, backup, restore, and export
+    IrisExampleChapter.jsx  interactive Iris scatter plot chapter (the demo visualisation)
+    WhatIsScifrChapter.jsx, ArchitectureChapter.jsx,
+    BoilerplateChapter.jsx, MutationWorkflowChapter.jsx  informational handbook chapters
+```
+
+## Data and snapshots
+
+Each project stores a snapshot in IndexedDB. The snapshot has two fields:
+
+```json
+{
+  "data": { "scifrExampleInputJSON": { "irisData": [...] } },
+  "uiState": {
+    "nodeSize": 8,
+    "isInteractive": true,
+    "colorScheme": "nivo",
+    "legendPosition": "bottom-right",
+    "legendOffsetX": 120,
+    "legendOffsetY": 0
+  }
+}
+```
+
+`data` holds the domain payload — whatever the application renders. `uiState` holds all Jotai UI atom values so that switching between projects fully restores the visual state, not just the data. Legacy snapshots without a `data` field are handled transparently via `snapshot?.data ?? snapshot`.
+
+### Save and load cycle
+
+When the user clicks Save Project, `useSnapshot.capture(scifrData)` reads all current atom values and packages them alongside the data into `{ data, uiState }`, which is written to IndexedDB. When a project is loaded or switched, `useSnapshot.restore(snapshot)` writes all the atom values back, and `scifrData` is updated to `activeProject?.snapshot?.data ?? activeProject?.snapshot ?? null`, which flows into `Main` as a prop.
+
+### HTML export cycle
+
+Clicking Export HTML calls `buildScifrDownload({ snapshot, title })`. It wraps the snapshot in a report envelope:
+
+```json
+{ "format": "scifr", "version": 1, "metadata": { ... }, "snapshot": { ... } }
+```
+
+The envelope is gzip-compressed and base64-encoded, then injected into `dist/scifr.html` by replacing the `<script id="scifr-data">` boundary content. The result is downloaded as `<title>.html`. This requires a production build — the check for external script `src` attributes prevents the export from running against the dev server.
+
+### Template viewer read cycle
+
+When a SCIFR report is opened in a browser, `ScifrApp` calls `loadScifrData()`, which reads the `<script id="scifr-data">` element from the DOM, then calls `unpackPayload()` to base64-decode and gunzip the content. If the result has `format === 'scifr'`, the viewer uses `data.snapshot` — this is the webapp export path. If there is no `format` field, the data is used directly — this is the `mutate-scifr` CLI path, kept for backward compatibility.
+
+## Data boundary
+
+All SCIFR payloads are embedded in HTML as:
+
+```html
+<script id="scifr-data" type="application/json">
+{"startIdx":"scifr-data-start","payload":<packed>,"endIdx":"scifr-data-end"}
+</script>
+```
+
+The `payload` field is a gzip+base64 packed object for webapp exports, or a columnar packed object for CLI outputs. Uncompressed plain JSON also works — `unpackPayload` handles both.
+
+## CLI injection
+
+```
+npx mutate-scifr --data mydata.csv --template dist/scifr.html --output report.html
+```
+
+The CLI accepts `.csv`, `.tsv`, `.tab`, and `.json`. It injects a plain data payload without a report envelope.
+
+The Node.js CLI is the reference implementation, but the mutation is simple enough to reimplement in any language. The only requirement is to locate the `<script id="scifr-data">` tag and replace its text content.
+
+```python
+# Python
+import json, gzip, base64, re
+
+def mutate_scifr(template_path, payload, output_path):
+    compressed = gzip.compress(json.dumps(payload).encode())
+    packed = {"format_version": 1, "compression": "gzip", "encoding": "base64",
+              "payload": base64.b64encode(compressed).decode()}
+    envelope = json.dumps({"startIdx": "scifr-data-start", "payload": packed,
+                           "endIdx": "scifr-data-end"})
+    html = open(template_path).read()
+    result = re.sub(r'(<script id="scifr-data"[^>]*>)(.*?)(</script>)',
+                    lambda m: m.group(1) + envelope + m.group(3), html, flags=re.DOTALL)
+    open(output_path, 'w').write(result)
+```
+
+```r
+# R
+mutate_scifr <- function(template_path, payload, output_path) {
+  library(jsonlite); library(base64enc)
+  compressed <- memCompress(toJSON(payload, auto_unbox=TRUE), type="gzip")
+  envelope <- toJSON(list(startIdx="scifr-data-start",
+    payload=list(format_version=1, compression="gzip", encoding="base64",
+                 payload=base64encode(compressed)),
+    endIdx="scifr-data-end"), auto_unbox=TRUE)
+  html <- paste(readLines(template_path), collapse="\n")
+  result <- gsub('(<script id="scifr-data"[^>]*>)(.*?)(</script>)',
+                 paste0("\\1", envelope, "\\3"), html, perl=TRUE)
+  writeLines(result, output_path)
+}
+```
+
+## File formats
+
+Three file formats are used across the SCIFR workflow:
+
+| Extension | Contents |
+|---|---|
+| `.html` | Self-contained SCIFR report. The full application and data are inlined. gzip+base64 payload embedded at the scifr-data boundary. |
+| `.scifr` | Single project export: `{ format, version, name, exportedAt, snapshot }`. Plain JSON. |
+| `.scifr.projects` | Bulk backup bundle: `{ exportedAt, version, projects: [...] }`. Plain JSON. |
+
+## Project management
+
+The Projects modal (opened from the nav bar) provides the full project lifecycle:
+
+- **New project** accepts an optional data file seed (`.scifr` or `.json`) so the project starts with data rather than empty.
+- **Import Project** loads a `.scifr` or `.json` file as a new project. It detects and rejects backup files, redirecting to Restore Backup instead.
+- **Backup Projects** exports all projects as a `.scifr.projects` bundle and stamps `lastBackedUpAt` on each project.
+- **Restore Backup** imports a `.scifr.projects` bundle. If a project exists locally with a newer `updatedAt`, it is skipped.
+- Each project in the list shows a backup age indicator: green under 3 days, yellow 3–7 days, red over 7 days.
+- Per-project actions: Save, Export `.scifr`, Export HTML, Rename, Delete.
+
+## Extending the boilerplate
+
+**To add a new chapter**, create `src/components/MyChapter.jsx` and export a config object and a default component:
+
+```jsx
+export const myChapterConfig = { id: 'my-chapter', title: 'My Chapter' };
+
+export default function MyChapter({ active }) {
+  return <section data-chapter-id={myChapterConfig.id} className="scifr-slide">...</section>;
+}
+```
+
+Then import it and add it to the `chapters` array in `Main.jsx`. The component receives `active` (boolean, true when the slide is in view) and any `componentProps` defined alongside it in the array.
+
+**To add new UI state to the project snapshot**, add a Jotai atom to `store.js`, then add a corresponding `useAtom` read/write pair to `useSnapshot.js` — include the value in `capture()` and the setter call in `restore()`. The atom is then saved and restored automatically on every project save and switch.
+
+## Stack
+
+SCIFR is a design pattern, not a framework. The stack in this boilerplate is a personal choice based on familiarity — other developers can implement the same pattern with Vue, Svelte, Angular, or any other SPA toolchain. What matters is that the build produces a single self-contained HTML file with a stable `<script id="scifr-data">` boundary. Everything else is up to the developer.
+
+The choices made here, and why:
+
+- **React** renders the viewer interface. Components receive the unpacked data payload as props and render charts, tables, or whatever the report needs.
+- **Vite** handles the build. Its `viteSingleFile` plugin inlines all JS and CSS assets into the HTML, which is what makes the output truly self-contained. The dual-config setup (`vite.config.mjs` and `vite.scifr.config.mjs`) separates the webapp build from the template build.
+- **Jotai** holds shared reactive state across components — chart controls, navigation, UI settings. Its atom model maps cleanly to the `uiState` field in the project snapshot, making per-project state save/restore straightforward.
+- **Tailwind CSS + DaisyUI** handle styling. DaisyUI provides ready-made components (modals, buttons, badges, collapse) so the project panel UI stays concise without custom CSS.
+- **Nivo** provides the demo scatter plot. Any charting library works here — Nivo was chosen because it is React-native, responsive, and reasonably lightweight for a bundled report.
+- **idb** is a thin wrapper around the browser's IndexedDB API. It handles the webapp's project storage — each project record holds a name, timestamps, backup metadata, and the full snapshot.
+
+## Build commands
+
+```
+npm run dev          # start the webapp dev server
+npm run build        # run build:app then build:scifr sequentially
+npm run build:app    # outputs dist/index.html (the webapp)
+npm run build:scifr  # outputs dist/scifr.html (the template)
+npm run preview      # preview the production webapp build
+```
