@@ -486,18 +486,100 @@ a {
   max-width: 200px;
 }
 
-.scifr-video {
-  display: block;
-  border: 1px dashed #d58d7a;
-  border-radius: 28px;
-  background: linear-gradient(135deg, #fff4ef 0%, #ffe2d3 100%);
-  padding: 26px;
-  transition: background 180ms ease, border-color 180ms ease;
+.scifr-slide--explainer {
+  align-items: flex-start;
+  padding-top: clamp(86px, 9vh, 108px);
 }
 
-.scifr-video:hover {
-  border-color: #bb6045;
-  background: linear-gradient(135deg, #ffece2 0%, #ffd7c1 100%);
+.scifr-slide--explainer .scifr-copy {
+  flex: 0 1 420px;
+  max-width: 420px;
+}
+
+.scifr-slide--explainer .scifr-copy h2 {
+  font-size: clamp(2.4rem, 5vw, 4.5rem);
+}
+
+.scifr-slide--explainer .scifr-lead {
+  margin: 18px 0 16px;
+  line-height: 1.48;
+}
+
+.scifr-slide--explainer .scifr-points {
+  gap: 8px;
+}
+
+.scifr-slide--explainer .scifr-points li {
+  line-height: 1.45;
+}
+
+.scifr-visual--explainer {
+  flex-grow: 1.4;
+}
+
+@media (min-width: 1280px) {
+  .scifr-slide--explainer .scifr-slide-inner {
+    align-items: flex-start;
+  }
+
+  .scifr-visual--explainer {
+    margin-top: 24px;
+  }
+}
+
+.scifr-explainer-card {
+  width: calc(100% - 50px);
+  margin-inline: auto;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #0d1118;
+  box-shadow: 0 18px 44px rgba(55, 42, 18, 0.16);
+}
+
+.scifr-explainer-frame {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  background: #0d1118;
+}
+
+.scifr-explainer-frame:fullscreen {
+  width: 100vw;
+  height: 100vh;
+  aspect-ratio: auto;
+}
+
+.scifr-explainer-expand {
+  display: block;
+  margin: 10px 25px 0 auto;
+  color: var(--accent);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-height: 800px) and (min-width: 1025px) {
+  .scifr-slide--explainer .scifr-copy h2 {
+    font-size: 3.5rem;
+  }
+
+  .scifr-slide--explainer .scifr-lead {
+    margin: 12px 0;
+    font-size: 1.05rem;
+    line-height: 1.4;
+  }
+
+  .scifr-slide--explainer .scifr-points {
+    gap: 6px;
+  }
+
+  .scifr-slide--explainer .scifr-points li {
+    font-size: 0.95rem;
+    line-height: 1.35;
+  }
 }
 
 .scifr-footer-note {

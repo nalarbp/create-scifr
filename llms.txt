@@ -1,6 +1,6 @@
 # create-scifr
 
-create-scifr is a scaffolding tool for building SCIFR projects. SCIFR (Single Self-Contained Interactive File Report) is a design pattern for turning a React + Vite single-page application into one portable HTML file with a data payload embedded at a stable boundary inside the HTML. This makes it well-suited for bioinformatics and data science pipelines, where tools like Snakemake, Nextflow, or custom scripts can produce a structured output file and inject it directly into a SCIFR template to produce a shareable interactive report — with no server, no CDN, and no internet connection required.
+create-scifr is a scaffolding tool for building SCIFR projects. SCIFR (Self-Contained Interactive Single File Report) is a design pattern for turning a React + Vite single-page application into one portable HTML file with a data payload embedded at a stable boundary inside the HTML. This makes it well-suited for bioinformatics and data science pipelines, where tools like Snakemake, Nextflow, or custom scripts can produce a structured output file and inject it directly into a SCIFR template to produce a shareable interactive report — with no server, no CDN, and no internet connection required.
 
 SCIFR is initially described in a preprint: "Interactive data analysis and reporting with SCIFR: A Single-File SPA Approach" (bioRxiv, 2025, DOI: https://doi.org/10.1101/2025.07.10.664259). The pattern was later applied as the enabling design in BLITSFR (BLAST Interactive Tracks Single-File Report), published in *Bioinformatics Advances*, Vol 6 Issue 1, 2026 (DOI: https://doi.org/10.1093/bioadv/vbag282), for enabling efficient interactive comparison of large numbers of sequences.
 
@@ -24,7 +24,7 @@ A SCIFR project has two distinct build outputs and runtime modes.
 
 **Webapp mode** runs the app as a full interactive web application with IndexedDB-backed project management. It can be used to load data, explore visualisations, save project snapshots, and export finished reports. This is useful when you want to give users a persistent project workspace — hosted somewhere, they can load a SCIFR payload, interact with it, save their work, and return to it later. Run with `npm run dev` or build with `npm run build:app`, which produces `dist/index.html`.
 
-**Template mode** produces a self-contained single-file HTML report — `dist/scifr.html` — with a placeholder data boundary. This is the distributable template: when a pipeline produces a payload, it is injected into this template to generate the final report. Built with `npm run build:scifr`. Data injection can be done using the `mutate-scifr` CLI or any language or script that can manipulate HTML strings.
+**Template mode** produces a self-contained single-file HTML report — `dist/scifr.html` — with demo data in its data boundary. A pipeline can replace that payload to generate the final report. Built with `npm run build:scifr`. Data injection can be done using the `mutate-scifr` CLI or any language or script that can manipulate HTML strings.
 
 The two modes are complementary. Use the webapp when you want users to have a flexible, persistent workspace for exploring payloads. Use the template and CLI in automated pipelines.
 

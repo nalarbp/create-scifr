@@ -1,5 +1,5 @@
 # SCIFR boilerplate
-SCIFR is a **S**ingle self-contained **I**nteractive **F**ile **R**eport — an SPA bundled into one portable HTML file with data embedded at its boundary.
+SCIFR is a **S**elf-**C**ontained **I**nteractive single **F**ile **R**eport — an SPA bundled into one portable HTML file with data embedded at its boundary.
 
 > For a full technical reference, see [llms.txt](./llms.txt).
 
@@ -16,7 +16,9 @@ npm run build
 ```
 Produces two outputs in `dist/`:
 - `dist/index.html` — the **webapp** (IndexedDB project management, export)
-- `dist/scifr.html` — the **SCIFR template** (self-contained report shell)
+- `dist/scifr.html` — the **SCIFR template** (self-contained report shell with demo data)
+
+The “What is SCIFR?” chapter embeds a prebuilt animated explainer from `template/src/assets/scifr_explainer.b64.txt`.
 
 ## Inject data via CLI (pipeline workflow)
 ```
